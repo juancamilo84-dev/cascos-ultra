@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cascos Ultra | Black Friday & Monitor de Procesos AWS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0b10;
+            --bg-surface: #12141f;
+            --bg-card: #161928;
+            --bg-card-alt: #1c2033;
+            --accent-red: #ff334b;
+            --accent-red-glow: rgba(255, 51, 75, 0.4);
+            --accent-green: #00ff88;
+            --accent-green-glow: rgba(0, 255, 136, 0.3);
+            --accent-cyan: #00e5ff;
+            --accent-cyan-glow: rgba(0, 229, 255, 0.3);
+            --aws-orange: #ff9900;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #262b42;
+            --border-highlight: #3b4366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* TICKER SUPERIOR */
+        .top-ticker {
+            background: linear-gradient(90deg, #ff334b, #b30024);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 8px 15px;
+            text-align: center;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px white;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.4; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* HEADER / NAVBAR */
+        header {
+            background-color: rgba(18, 20, 31, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 8px rgba(255, 51, 75, 0.5));
+        }
+
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .brand-text span {
+            color: var(--accent-red);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link-btn:hover, .nav-link-btn.active {
+            border-color: var(--accent-cyan);
+            color: #fff;
+            background: rgba(0, 229, 255, 0.08);
+        }
+
+        .badge-live {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .cart-btn {
+            background: linear-gradient(135deg, var(--accent-red), #99001f);
+            border: none;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(255, 51, 75, 0.3);
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 51, 75, 0.5);
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 25px 20px;
+            width: 100%;
+        }
+
+        /* ============================================================== */
+        /* PANEL DE TELEMETRÍA DEL SERVIDOR DE APLICACIÓN                 */
+        /* ============================================================== */
+        .server-inspector {
+            background: linear-gradient(135deg, #141724, #0f111a);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 35px;
+            box-shadow: 0 10px 30px rgba(0, 229, 255, 0.12);
+            position: relative;
+        }
+
+        .server-inspector::before {
+            content: 'AWS EC2 APPLICATION SERVER & IMDSv2';
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            opacity: 0.85;
+        }
+
+        .inspector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .inspector-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .inspector-title h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            color: white;
+            font-weight: 800;
+        }
+
+        .inspector-badge {
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .metric-value.highlight {
+            color: var(--accent-green);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+        }
+
+        .metric-bar-wrap {
+            margin-top: 8px;
+            height: 6px;
+            background: #232a3d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            background: var(--accent-cyan);
+            width: 25%;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+
+        /* SECCIÓN DE CONTROL DE ESTRÉS Y PRUEBA ASG */
+        .stress-bar-zone {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stress-info h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--aws-orange);
+            margin-bottom: 4px;
+        }
+
+        .stress-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .stress-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-stress {
+            background: linear-gradient(135deg, var(--aws-orange), #d97706);
+            color: #111;
+            font-weight: 800;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-stress:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 14px rgba(255, 153, 0, 0.5);
+        }
+
+        .btn-stress-stop {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            font-weight: 700;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-stress-stop:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-refresh {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-refresh:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================================== */
+        /* MONITOR DE PROCESOS DEL SISTEMA OPERATIVO (TASK MANAGER)       */
+        /* ============================================================== */
+        .process-monitor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .process-header {
+            background: #111422;
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .process-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .process-title-group h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .process-tag {
+            background: rgba(0, 229, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+        }
+
+        .process-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            background: #0a0c14;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            width: 220px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .auto-refresh-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auto-refresh-toggle input {
+            accent-color: var(--accent-green);
+            cursor: pointer;
+        }
+
+        .process-table-wrapper {
+            max-height: 420px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .process-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        .process-table th {
+            position: sticky;
+            top: 0;
+            background: #181d2e;
+            color: var(--accent-cyan);
+            padding: 12px 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .process-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+        }
+
+        .process-table tr:hover {
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .process-table tr.stress-highlight {
+            background: rgba(255, 51, 75, 0.15) !important;
+            border-left: 3px solid var(--accent-red);
+        }
+
+        .process-table tr.stress-highlight td {
+            color: #ffa4b0;
+            font-weight: 700;
+        }
+
+        .badge-status {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .status-running { background: rgba(0, 255, 136, 0.15); color: var(--accent-green); }
+        .status-sleeping { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+        .status-stress { background: rgba(255, 51, 75, 0.25); color: var(--accent-red); animation: pulseAlarm 1s infinite alternate; }
+
+        @keyframes pulseAlarm {
+            from { opacity: 0.7; }
+            to { opacity: 1; text-shadow: 0 0 8px var(--accent-red); }
+        }
+
+        .process-footer {
+            background: #111422;
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ============================================================== */
+        /* CATÁLOGO DE PRODUCTOS BLACK FRIDAY                             */
+        /* ============================================================== */
+        .hero {
+            text-align: center;
+            margin-bottom: 45px;
+            padding: 20px 0;
+        }
+
+        .hero-tag {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-red);
+            font-size: 0.88rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 12px;
+            text-shadow: 0 0 12px var(--accent-red-glow);
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            color: transparent;
+            -webkit-text-stroke: 1.5px #fff;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.45rem;
+            color: white;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .product-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-red);
+            box-shadow: 0 12px 30px rgba(255, 51, 75, 0.18);
+        }
+
+        .discount-pill {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--accent-red);
+            color: white;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            z-index: 2;
+        }
+
+        .product-img {
+            height: 190px;
+            background: linear-gradient(180deg, #1f2538, #121422);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            user-select: none;
+        }
+
+        .product-details {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-cat {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .pricing {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-top: auto;
+            margin-bottom: 16px;
+        }
+
+        .current-price {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--accent-green);
+        }
+
+        .old-price {
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-decoration: line-through;
+        }
+
+        .btn-buy {
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-buy:hover {
+            background-color: var(--accent-red);
+            color: white;
+            box-shadow: 0 0 15px var(--accent-red-glow);
+        }
+
+        /* ============================================================== */
+        /* MODAL DEL CARRITO DE COMPRAS                                   */
+        /* ============================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .cart-modal {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 550px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            animation: modalFadeIn 0.25s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .cart-modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-modal-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .btn-close-modal:hover { color: white; }
+
+        .cart-modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 15px;
+        }
+
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-title { font-weight: 700; font-size: 0.95rem; }
+        .cart-item-price { color: var(--accent-green); font-family: 'Orbitron', sans-serif; font-size: 0.85rem; }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-qty {
+            background: #232a3d;
+            border: 1px solid var(--border-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-modal-footer {
+            padding: 18px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .cart-total-price {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-green);
+            font-size: 1.3rem;
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, var(--accent-green), #00b359);
+            color: #03140a;
+            font-weight: 800;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-checkout:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 0 16px var(--accent-green-glow);
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #111827;
+            border: 1px solid var(--accent-green);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: auto;
+            background-color: var(--bg-surface);
+            border-top: 1px solid var(--border-color);
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-specs {
+            margin-top: 8px;
+            font-family: monospace;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ticker promocional -->
+    <div class="top-ticker">
+        <span class="pulse-dot"></span>
+        <span>BLACK FRIDAY CASCOS ULTRA &bull; TRÁFICO DINÁMICO &bull; AWS FREE TIER &bull; MONITOR DE PROCESOS ACTIVO</span>
+        <span class="pulse-dot"></span>
+    </div>
+
+    <!-- Navegación -->
+    <header>
+        <a href="#" class="brand">
+            <span class="brand-logo">🪖</span>
+            <div class="brand-text">CASCOS<span>ULTRA</span></div>
+        </a>
+
+        <div class="nav-links">
+            <a href="#catalogo" class="nav-link-btn">🛍️ Catálogo</a>
+            <a href="#monitor" class="nav-link-btn">📊 Monitor de Procesos</a>
+            <a href="diagrama_arquitectura.html" class="nav-link-btn" target="_blank">📐 Diagrama AWS</a>
+            
+            <div class="badge-live" id="live-indicator">
+                <span class="pulse-dot" style="background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green);"></span>
+                <span id="live-indicator-text">NODO CONECTADO</span>
+            </div>
+
+            <button class="cart-btn" onclick="openCartModal()">
+                🛒 Carrito (<span id="cart-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓN 1: PANEL DE TELEMETRÍA DEL SERVIDOR EC2 & IMDSv2       -->
+        <!-- ============================================================== -->
+        <section class="server-inspector" id="servidor">
+            <div class="inspector-header">
+                <div class="inspector-title">
+                    <span style="font-size: 1.6rem;">⚡</span>
+                    <div>
+                        <h2>Servidor de Aplicación en Vivo</h2>
+                        <div style="font-size: 0.78rem; color: #94a3b8;">Inspección en tiempo real de la instancia servida por el ALB</div>
+                    </div>
+                </div>
+                <span class="inspector-badge" id="app-server-env">NGINX / Linux AL2023</span>
+            </div>
+
+            <div class="metrics-grid">
+                <!-- Instance ID -->
+                <div class="metric-card">
+                    <div class="metric-label">🏷️ Instance ID (EC2)</div>
+                    <div class="metric-value highlight" id="srv-instance-id">__INSTANCE_ID__</div>
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">Origen: AWS IMDSv2</div>
+                </div>
+
+                <!-- Availability Zone -->
+                <div class="metric-card">
+                    <div class="metric-label">🌐 Availability Zone</div>
+                    <div class="metric-value" id="srv-az">__AZ__</div>
+                    <div style="font-size: 0.7rem; color: var(--accent-cyan); margin-top: 4px;">Multi-AZ Resilient</div>
+                </div>
+
+                <!-- IP Privada -->
+                <div class="metric-card">
+                    <div class="metric-label">🔒 IP Privada (Subred)</div>
+                    <div class="metric-value" id="srv-ip">__LOCAL_IP__</div>
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">VPC 10.0.0.0/16</div>
+                </div>
+
+                <!-- CPU Usage -->
+                <div class="metric-card">
+                    <div class="metric-label">📈 Carga de CPU Actual</div>
+                    <div class="metric-value" id="srv-cpu">18%</div>
+                    <div class="metric-bar-wrap">
+                        <div class="metric-bar-fill" id="srv-cpu-bar" style="width: 18%;"></div>
+                    </div>
+                </div>
+
+                <!-- RAM Usage -->
+                <div class="metric-card">
+                    <div class="metric-label">🧠 Memoria RAM</div>
+                    <div class="metric-value" id="srv-ram">342 MB / 1 GB</div>
+                    <div class="metric-bar-wrap">
+                        <div class="metric-bar-fill" id="srv-ram-bar" style="width: 35%; background: var(--accent-green);"></div>
+                    </div>
+                </div>
+
+                <!-- Uptime -->
+                <div class="metric-card">
+                    <div class="metric-label">⏱️ Tiempo Activo (Uptime)</div>
+                    <div class="metric-value" id="srv-uptime">0h 14m</div>
+                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">Health Check: 200 OK</div>
+                </div>
+            </div>
+
+            <!-- ZONA DE CONTROL DE ESTRÉS DE CPU (PRUEBA DE AUTO SCALING) -->
+            <div class="stress-bar-zone">
+                <div class="stress-info">
+                    <h4>🔥 Prueba de Escalamiento Horizontal (Auto Scaling Group)</h4>
+                    <p>Dispara un proceso intensivo de CPU (<code>stress-ng</code>) en el servidor para superar el umbral del 50% y activar el ASG.</p>
+                </div>
+
+                <div class="stress-actions">
+                    <button class="btn-stress" id="btn-trigger-stress" onclick="triggerServerStress()">
+                        <span>🔥</span> Disparar Estrés CPU
+                    </button>
+                    <button class="btn-stress-stop" id="btn-stop-stress" onclick="stopServerStress()">
+                        <span>⏹</span> Detener
+                    </button>
+                    <button class="btn-refresh" onclick="forceServerRefresh()">
+                        <span>🔄</span> Probar Balanceo ALB
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓN 2: MONITOR DE PROCESOS DEL SERVIDOR (TASK MANAGER)     -->
+        <!-- ============================================================== -->
+        <section class="process-monitor-card" id="monitor">
+            <div class="process-header">
+                <div class="process-title-group">
+                    <span style="font-size: 1.4rem;">📊</span>
+                    <h3>Monitor de Procesos del Servidor</h3>
+                    <span class="process-tag" id="process-count-badge">24 Procesos</span>
+                </div>
+
+                <div class="process-controls">
+                    <input type="text" id="process-search" class="search-input" placeholder="🔍 Filtrar proceso (nginx, stress...)" oninput="filterProcessList()">
+                    
+                    <label class="auto-refresh-toggle">
+                        <input type="checkbox" id="auto-refresh-chk" checked onchange="toggleAutoRefresh(this.checked)">
+                        <span>Auto-refresco (2s)</span>
+                    </label>
+
+                    <button class="btn-refresh" style="padding: 6px 12px;" onclick="loadProcesses(true)">
+                        <span>🔄</span> Refrescar
+                    </button>
+                </div>
+            </div>
+
+            <div class="process-table-wrapper">
+                <table class="process-table" id="process-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">PID</th>
+                            <th style="width: 110px;">USUARIO</th>
+                            <th style="width: 100px;">% CPU</th>
+                            <th style="width: 100px;">% MEM</th>
+                            <th style="width: 110px;">ESTADO</th>
+                            <th>COMANDO / PROCESO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="process-table-body">
+                        <!-- Rellenado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="process-footer">
+                <div>Última actualización: <span id="last-update-time">--:--:--</span></div>
+                <div id="process-mode-text">Modo: API en vivo (/api/processes)</div>
+            </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SECCIÓN 3: HERO Y CATÁLOGO DE PRODUCTOS (TIENDA 100% FUNCIONAL)-->
+        <!-- ============================================================== -->
+        <section class="hero" id="catalogo">
+            <div class="hero-tag">Edición Especial Black Friday</div>
+            <h1>Protección Máxima<br><span>Precios de Destrucción</span></h1>
+            <p>Siente la adrenalina sobre el asfalto con la tecnología en cascos de fibra de carbono más avanzada del mundo.</p>
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h3>Ofertas Relámpago Black Friday</h3>
+                
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterCatalog('all', this)">Todos</button>
+                    <button class="filter-btn" onclick="filterCatalog('Pista', this)">Pista</button>
+                    <button class="filter-btn" onclick="filterCatalog('Touring', this)">Touring</button>
+                    <button class="filter-btn" onclick="filterCatalog('Enduro', this)">Enduro</button>
+                    <button class="filter-btn" onclick="filterCatalog('Urbano', this)">Urbano</button>
+                </div>
+            </div>
+
+            <div class="products-grid" id="products-container">
+                <!-- Se inyecta dinámicamente con JavaScript -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- MODAL DE CARRITO -->
+    <div class="modal-overlay" id="cart-modal">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <h3>🛒 Tu Carrito de Compras</h3>
+                <button class="btn-close-modal" onclick="closeCartModal()">&times;</button>
+            </div>
+            <div class="cart-modal-body" id="cart-modal-items">
+                <!-- Items del carrito -->
+            </div>
+            <div class="cart-modal-footer">
+                <div class="cart-total-row">
+                    <span>Total Estimado:</span>
+                    <span class="cart-total-price" id="cart-total-amount">$0 USD</span>
+                </div>
+                <button class="btn-checkout" onclick="checkoutOrder()">
+                    💳 Procesar Pedido (Simular Compra)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICACIONES -->
+    <div class="toast" id="toast-msg">
+        <span style="font-size: 1.2rem;">✅</span>
+        <span id="toast-text">Notificación</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p><strong>Cascos Ultra &copy; 2026</strong> — Infraestructura de Producción para Black Friday.</p>
+        <p class="footer-specs">Arquitectura: AWS VPC 10.0.0.0/16 &bull; 3 Subredes Públicas &bull; ALB + Target Tracking ASG &bull; NGINX & Linux AL2023</p>
+    </footer>
+
+    <!-- ============================================================== -->
+    <!-- LÓGICA JAVASCRIPT DEL FRONTEND Y MONITOR DE PROCESOS           -->
+    <!-- ============================================================== -->
+    <script>
+        // -------------------------------------------------------------
+        // CATÁLOGO DE PRODUCTOS
+        // -------------------------------------------------------------
+        const PRODUCTS = [
+            { id: 1, name: 'Ultra Carbon Track Pro', category: 'Pista', icon: '🏎️', discount: '-50% OFF', price: 249, oldPrice: 499, spec: 'Fibra Carbono 12K Aerodinámica' },
+            { id: 2, name: 'Adventure GT Dual-Visor', category: 'Touring', icon: '🏍️', discount: '-45% OFF', price: 199, oldPrice: 360, spec: 'Modular Touring con Visor Solar' },
+            { id: 3, name: 'Titan Enduro MX-Apex', category: 'Enduro', icon: '⚡', discount: '-55% OFF', price: 145, oldPrice: 320, spec: 'Off-Road Ventilado de Alta Resistencia' },
+            { id: 4, name: 'Stealth Matte Black Edition', category: 'Urbano', icon: '🛡️', discount: '-40% OFF', price: 165, oldPrice: 275, spec: 'Urbano Minimalista Anti-rayones' },
+            { id: 5, name: 'CyberVeloce Aerodynamic', category: 'Pista', icon: '🚀', discount: '-48% OFF', price: 289, oldPrice: 520, spec: 'Spoiler Trasero & Túnel de Viento' },
+            { id: 6, name: 'Phantom Ghost Kevlar', category: 'Touring', icon: '🪖', discount: '-42% OFF', price: 215, oldPrice: 370, spec: 'Compuesto Kevlar-Aramida' }
+        ];
+
+        let cart = {};
+        let allProcesses = [];
+        let autoRefreshInterval = null;
+        let isStressActive = false;
+        let stressCountdown = 0;
+        let stressInterval = null;
+
+        // Renderizar catálogo
+        function renderProducts(filter = 'all') {
+            const container = document.getElementById('products-container');
+            container.innerHTML = '';
+
+            const list = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+            list.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <span class="discount-pill">${p.discount}</span>
+                    <div class="product-img">${p.icon}</div>
+                    <div class="product-details">
+                        <span class="product-cat">${p.category} &bull; ${p.spec}</span>
+                        <h4 class="product-title">${p.name}</h4>
+                        <div class="pricing">
+                            <span class="current-price">$${p.price} USD</span>
+                            <span class="old-price">$${p.oldPrice} USD</span>
+                        </div>
+                        <button class="btn-buy" onclick="addToCart(${p.id})">
+                            <span>🛒</span> Agregar al Carrito
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterCatalog(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts(category);
+        }
+
+        // Carrito de compras
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (!product) return;
+
+            if (cart[productId]) {
+                cart[productId].qty++;
+            } else {
+                cart[productId] = { ...product, qty: 1 };
+            }
+            updateCartUI();
+            showToast(`🔥 Agregaste "${product.name}" al carrito`);
+        }
+
+        function updateCartQty(productId, change) {
+            if (!cart[productId]) return;
+            cart[productId].qty += change;
+            if (cart[productId].qty <= 0) {
+                delete cart[productId];
+            }
+            updateCartUI();
+            renderCartModal();
+        }
+
+        function updateCartUI() {
+            let totalItems = 0;
+            for (const id in cart) {
+                totalItems += cart[id].qty;
+            }
+            document.getElementById('cart-count').innerText = totalItems;
+        }
+
+        function openCartModal() {
+            renderCartModal();
+            document.getElementById('cart-modal').classList.add('open');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('open');
+        }
+
+        function renderCartModal() {
+            const body = document.getElementById('cart-modal-items');
+            body.innerHTML = '';
+            let totalAmount = 0;
+            const items = Object.values(cart);
+
+            if (items.length === 0) {
+                body.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 30px;">Tu carrito está vacío. ¡Elige tus cascos con descuento!</div>';
+                document.getElementById('cart-total-amount').innerText = '$0 USD';
+                return;
+            }
+
+            items.forEach(item => {
+                const subtotal = item.price * item.qty;
+                totalAmount += subtotal;
+
+                const row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML = `
+                    <div style="font-size: 2rem;">${item.icon}</div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">$${item.price} USD x ${item.qty} = $${subtotal} USD</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="btn-qty" onclick="updateCartQty(${item.id}, -1)">-</button>
+                        <span style="font-weight: bold; min-width: 20px; text-align: center;">${item.qty}</span>
+                        <button class="btn-qty" onclick="updateCartQty(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                body.appendChild(row);
+            });
+
+            document.getElementById('cart-total-amount').innerText = `$${totalAmount} USD`;
+        }
+
+        function checkoutOrder() {
+            if (Object.keys(cart).length === 0) {
+                showToast('⚠️ Tu carrito está vacío');
+                return;
+            }
+            cart = {};
+            updateCartUI();
+            closeCartModal();
+            showToast('🎉 ¡Orden procesada con éxito! Despacho prioritario asignado.');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            const text = document.getElementById('toast-text');
+            text.innerText = message;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3500);
+        }
+
+        // -------------------------------------------------------------
+        // MONITOR DE PROCESOS Y TELEMETRÍA DEL SISTEMA
+        // -------------------------------------------------------------
+        async function loadTelemetry() {
+            try {
+                const res = await fetch('/api/system');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.instance_id) document.getElementById('srv-instance-id').innerText = data.instance_id;
+                    if (data.az) document.getElementById('srv-az').innerText = data.az;
+                    if (data.local_ip) document.getElementById('srv-ip').innerText = data.local_ip;
+                    if (data.cpu_percent !== undefined) {
+                        const cpu = Math.round(data.cpu_percent);
+                        document.getElementById('srv-cpu').innerText = `${cpu}%`;
+                        const bar = document.getElementById('srv-cpu-bar');
+                        bar.style.width = `${Math.min(cpu, 100)}%`;
+                        bar.style.backgroundColor = cpu > 50 ? 'var(--accent-red)' : 'var(--accent-cyan)';
+                    }
+                    if (data.ram_text) document.getElementById('srv-ram').innerText = data.ram_text;
+                    if (data.uptime_text) document.getElementById('srv-uptime').innerText = data.uptime_text;
+                    document.getElementById('process-mode-text').innerText = 'Modo: Conectado a EC2 API en Vivo (/api/system)';
+                } else {
+                    fallbackSimulationTelemetry();
+                }
+            } catch (err) {
+                fallbackSimulationTelemetry();
+            }
+        }
+
+        function fallbackSimulationTelemetry() {
+            // Si corre en preview local sin backend activo, usar simulación reactiva
+            const placeholderId = document.getElementById('srv-instance-id').innerText;
+            if (placeholderId.includes('__INSTANCE_ID__')) {
+                document.getElementById('srv-instance-id').innerText = 'i-' + Math.random().toString(16).substring(2, 10) + ' (Simulado)';
+                document.getElementById('srv-az').innerText = 'us-east-1a';
+                document.getElementById('srv-ip').innerText = '10.0.1.45';
+                document.getElementById('srv-uptime').innerText = '1h 22m';
+            }
+
+            const baseCpu = isStressActive ? Math.floor(82 + Math.random() * 14) : Math.floor(18 + Math.random() * 12);
+            document.getElementById('srv-cpu').innerText = `${baseCpu}%`;
+            const bar = document.getElementById('srv-cpu-bar');
+            bar.style.width = `${baseCpu}%`;
+            bar.style.backgroundColor = baseCpu > 50 ? 'var(--accent-red)' : 'var(--accent-cyan)';
+            
+            const ramUsed = isStressActive ? 520 : 340;
+            document.getElementById('srv-ram').innerText = `${ramUsed} MB / 1 GB`;
+            document.getElementById('process-mode-text').innerText = 'Modo: Simulación Reactiva (Local / Standalone)';
+        }
+
+        async function loadProcesses(showFlashToast = false) {
+            try {
+                const res = await fetch('/api/processes');
+                if (res.ok) {
+                    const data = await res.json();
+                    allProcesses = data.processes || [];
+                    renderProcessTable(allProcesses);
+                } else {
+                    simulateProcessList();
+                }
+            } catch (err) {
+                simulateProcessList();
+            }
+
+            const now = new Date();
+            document.getElementById('last-update-time').innerText = now.toTimeString().split(' ')[0];
+            if (showFlashToast) showToast('🔄 Procesos actualizados');
+        }
+
+        function simulateProcessList() {
+            // Simulación completa de procesos Linux estándar en servidor de aplicaciones
+            const baseList = [
+                { pid: 1, user: 'root', cpu: 0.0, mem: 0.8, stat: 'Ss', comm: '/usr/lib/systemd/systemd --switched-root' },
+                { pid: 320, user: 'root', cpu: 0.1, mem: 0.4, stat: 'Ss', comm: '/usr/lib/systemd/systemd-journald' },
+                { pid: 345, user: 'root', cpu: 0.0, mem: 0.3, stat: 'Ss', comm: '/usr/lib/systemd/systemd-udevd' },
+                { pid: 512, user: 'systemd-resolve', cpu: 0.1, mem: 0.4, stat: 'Ss', comm: '/usr/lib/systemd/systemd-resolved' },
+                { pid: 618, user: 'root', cpu: 0.2, mem: 0.5, stat: 'Ssl', comm: '/usr/sbin/rsyslogd -n' },
+                { pid: 680, user: 'root', cpu: 0.0, mem: 0.6, stat: 'Ss', comm: '/usr/sbin/sshd -D' },
+                { pid: 742, user: 'root', cpu: 0.0, mem: 0.3, stat: 'Ss', comm: '/usr/sbin/crond -n' },
+                { pid: 810, user: 'root', cpu: 0.1, mem: 0.9, stat: 'Ss', comm: 'nginx: master process /usr/sbin/nginx' },
+                { pid: 811, user: 'nginx', cpu: (1.5 + Math.random() * 2).toFixed(1), mem: 1.4, stat: 'S', comm: 'nginx: worker process' },
+                { pid: 812, user: 'nginx', cpu: (1.2 + Math.random() * 2).toFixed(1), mem: 1.3, stat: 'S', comm: 'nginx: worker process' },
+                { pid: 905, user: 'ec2-user', cpu: 0.2, mem: 1.8, stat: 'Ssl', comm: 'python3 /opt/cascos/server.py' },
+                { pid: 920, user: 'root', cpu: 0.0, mem: 0.4, stat: 'Ss', comm: 'amazon-ssm-agent' },
+                { pid: 1045, user: 'root', cpu: 0.1, mem: 0.5, stat: 'S', comm: 'auditd' },
+                { pid: 1102, user: 'chrony', cpu: 0.0, mem: 0.2, stat: 'S', comm: '/usr/sbin/chronyd' }
+            ];
+
+            if (isStressActive) {
+                // Agregar procesos activos de stress-ng consumiendo alto CPU
+                baseList.unshift(
+                    { pid: 2840, user: 'root', cpu: (44.5 + Math.random() * 5).toFixed(1), mem: 2.1, stat: 'R', comm: 'stress-ng-cpu [worker 1] --cpu 2' },
+                    { pid: 2841, user: 'root', cpu: (43.8 + Math.random() * 5).toFixed(1), mem: 2.0, stat: 'R', comm: 'stress-ng-cpu [worker 2] --cpu 2' },
+                    { pid: 2839, user: 'root', cpu: 1.2, mem: 0.5, stat: 'S', comm: 'stress-ng [main coordinator]' }
+                );
+            }
+
+            allProcesses = baseList;
+            renderProcessTable(allProcesses);
+        }
+
+        function renderProcessTable(list) {
+            const tbody = document.getElementById('process-table-body');
+            tbody.innerHTML = '';
+            document.getElementById('process-count-badge').innerText = `${list.length} Procesos`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 25px;">No se encontraron procesos coincidentes.</td></tr>';
+                return;
+            }
+
+            list.forEach(p => {
+                const tr = document.createElement('tr');
+                const isStress = p.comm.includes('stress-ng');
+                if (isStress) tr.className = 'stress-highlight';
+
+                const isRunning = p.stat.includes('R') || parseFloat(p.cpu) > 10;
+                let statusBadge = isStress 
+                    ? '<span class="badge-status status-stress">🔥 STRESS</span>' 
+                    : (isRunning ? '<span class="badge-status status-running">RUNNING</span>' : '<span class="badge-status status-sleeping">SLEEP</span>');
+
+                tr.innerHTML = `
+                    <td><strong>${p.pid}</strong></td>
+                    <td>${p.user}</td>
+                    <td style="font-weight: 700; color: ${parseFloat(p.cpu) > 20 ? 'var(--accent-red)' : 'var(--text-main)'};">${p.cpu}%</td>
+                    <td>${p.mem}%</td>
+                    <td>${statusBadge}</td>
+                    <td style="color: ${isStress ? 'var(--accent-red)' : '#e2e8f0'}; font-weight: ${isStress ? '700' : 'normal'};">${escapeHtml(p.comm)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterProcessList() {
+            const query = document.getElementById('process-search').value.toLowerCase().trim();
+            if (!query) {
+                renderProcessTable(allProcesses);
+                return;
+            }
+            const filtered = allProcesses.filter(p => 
+                p.pid.toString().includes(query) ||
+                p.user.toLowerCase().includes(query) ||
+                p.comm.toLowerCase().includes(query)
+            );
+            renderProcessTable(filtered);
+        }
+
+        function toggleAutoRefresh(enabled) {
+            if (enabled) {
+                startAutoRefresh();
+                showToast('⚡ Auto-refresco activado (cada 2s)');
+            } else {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                showToast('⏸ Auto-refresco pausado');
+            }
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                loadTelemetry();
+                loadProcesses();
+            }, 2000);
+        }
+
+        // Disparo de estrés
+        async function triggerServerStress() {
+            isStressActive = true;
+            stressCountdown = 300; // 300 segundos (5 minutos) para permitir que CloudWatch evalúe y el ASG agregue nodos
+            document.getElementById('btn-trigger-stress').disabled = true;
+            document.getElementById('btn-trigger-stress').style.opacity = '0.5';
+
+            showToast('🔥 Estrés de CPU iniciado (5 min). CloudWatch tardará ~1-2 min en activar el escalamiento del ASG.');
+
+            try {
+                await fetch('/api/stress', { method: 'POST' });
+            } catch (e) {
+                // fallback local
+            }
+
+            if (stressInterval) clearInterval(stressInterval);
+            stressInterval = setInterval(() => {
+                stressCountdown--;
+                if (stressCountdown <= 0) {
+                    stopServerStress();
+                }
+            }, 1000);
+
+            loadTelemetry();
+            loadProcesses();
+        }
+
+        async function stopServerStress() {
+            isStressActive = false;
+            clearInterval(stressInterval);
+            stressInterval = null;
+
+            document.getElementById('btn-trigger-stress').disabled = false;
+            document.getElementById('btn-trigger-stress').style.opacity = '1';
+
+            try {
+                await fetch('/api/stress/stop', { method: 'POST' });
+            } catch (e) {
+                // fallback local
+            }
+
+            showToast('⏹ Estrés detenido. CPU retornando a niveles basales.');
+            loadTelemetry();
+            loadProcesses();
+        }
+
+        function forceServerRefresh() {
+            // Forzar recarga para balanceo ALB
+            window.location.reload(true);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        // Inicializar al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            loadTelemetry();
+            loadProcesses();
+            startAutoRefresh();
+        });
+    </script>
+</body>
+</html>

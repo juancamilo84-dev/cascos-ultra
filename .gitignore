@@ -1,0 +1,37 @@
+# Terraform: binarios de providers y estado local
+**/.terraform/*
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Variables con secretos
+*.tfvars
+*.tfvars.json
+*.csv
+*.ppk
+admin_accessKeys.csv
+
+# Empaquetados que genera Terraform (archive_file)
+*.zip
+build/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
