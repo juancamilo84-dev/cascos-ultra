@@ -29,18 +29,18 @@ jobs:
     uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/plan.yml@main
     with:
       proyecto: ${{ github.event.repository.name }}
-      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
+      cuenta: "715054189423"
 
   apply:
     if: github.event_name == 'push' || inputs.accion == 'apply'
     uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/apply.yml@main
     with:
       proyecto: ${{ github.event.repository.name }}
-      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
+      cuenta: "715054189423"
 
   destroy:
     if: inputs.accion == 'destroy'
     uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/destroy.yml@main
     with:
       proyecto: ${{ github.event.repository.name }}
-      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
+      cuenta: "715054189423"
