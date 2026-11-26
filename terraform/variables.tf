@@ -4,6 +4,13 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+# El pipeline centralizado pasa -var="proyecto=<nombre-del-repo>"
+variable "proyecto" {
+  description = "Nombre del repositorio (lo inyecta el pipeline automáticamente)"
+  type        = string
+  default     = "cascos-ultra"
+}
+
 variable "project_name" {
   description = "Prefijo identificador para los recursos del proyecto"
   type        = string

@@ -1,0 +1,46 @@
+# =====================================================================
+#  EL PIPELINE DE ESTE PROYECTO · no tiene pasos propios: llama a los
+#  pipes centralizados (alejandrobarreracorrea/ab-esumer-pipelines).
+#    pull request  → plan     (revisar)
+#    push a main   → apply    (desplegar)
+#    Run workflow  → destroy  (a mano)
+#  El proyecto se llama como el repo. Solo necesita la variable AWS_ACCOUNT_ID.
+# =====================================================================
+name: pipeline
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "¿Qué hacer?"
+        type: choice
+        options: [apply, destroy]
+        default: apply
+
+permissions:
+  id-token: write   # para entrar a AWS sin llaves (OIDC)
+  contents: read
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/plan.yml@main
+    with:
+      proyecto: ${{ github.event.repository.name }}
+      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
+
+  apply:
+    if: github.event_name == 'push' || inputs.accion == 'apply'
+    uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/apply.yml@main
+    with:
+      proyecto: ${{ github.event.repository.name }}
+      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
+
+  destroy:
+    if: inputs.accion == 'destroy'
+    uses: alejandrobarreracorrea/ab-esumer-pipelines/.github/workflows/destroy.yml@main
+    with:
+      proyecto: ${{ github.event.repository.name }}
+      cuenta: ${{ vars.AWS_ACCOUNT_ID }}
